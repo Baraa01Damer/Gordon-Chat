@@ -1,4 +1,5 @@
 'use client'
+import './globals.css';
 import { Box, Stack, TextField, Button } from '@mui/material'
 import Image from "next/image"
 import { useState } from 'react'
@@ -88,13 +89,17 @@ export default function Home() {
               <Box
                 bgcolor={
                   message.role === 'assistant'
-                    ? 'primary.main'
-                    : 'secondary.main'
+                    ? '#8e8e93' // Bot's response color
+                    : '#218aff' // User's message color
                 }
-                color="white"
+                color={
+                  message.role === 'assistant'
+                    ? 'black' // Bot's text color
+                    : 'white' // User's text color
+                }
                 borderRadius={16}
                 p={3}
-                dangerouslySetInnerHTML={{ __html: marked(message.content) }} // Render Markdown
+                dangerouslySetInnerHTML={{ __html: marked(message.content) }}
               />
             </Box>
           ))}
