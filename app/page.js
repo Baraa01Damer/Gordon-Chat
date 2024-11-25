@@ -2,16 +2,17 @@
 import { Box, Stack, TextField, Button } from '@mui/material'
 import Image from "next/image"
 import { useState } from 'react'
+import { marked } from 'marked';
 
 export default function Home() {
   const [messages, setMessages] = useState([
     {
       role: 'assistant',
-      content: 'Hi! I am Gordon, your friendly assistant. How can I help you today?'
+      content: 'Hi! I am Gordon, your friendly assistant. How can I help you today?',
     },
-  ])
+  ]);
 
-  const [message, setMessage] = useState('')
+  const [message, setMessage] = useState('');
 
   const sendMessage = async () => {
     setMessage('');
@@ -21,11 +22,11 @@ export default function Home() {
       { role: 'assistant', content: '' },
     ]);
     const response = fetch('/api/chat', {
-      method: "POST",
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify([...messages, { role: 'user', content: message }]), // Fix: replaced `content, message` with `content: message`
+      body: JSON.stringify([...messages, { role: 'user', content: message }]),
     }).then(async (res) => {
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
@@ -47,11 +48,10 @@ export default function Home() {
             },
           ];
         });
-        return reader.read().then(processText); // Fix: added parentheses to `reader.read`
+        return reader.read().then(processText);
       });
     });
   };
-
 
   return (
     <Box
@@ -77,29 +77,27 @@ export default function Home() {
           overflow="auto"
           maxHeight="100%"
         >
-          {
-            messages.map((message, index) => (
+          {messages.map((message, index) => (
+            <Box
+              key={index}
+              display="flex"
+              justifyContent={
+                message.role === 'assistant' ? 'flex-start' : 'flex-end'
+              }
+            >
               <Box
-                key={index}
-                display="flex"
-                justifyContent={
-                  message.role === 'assistant' ? 'flex-start' : 'flex-end'
+                bgcolor={
+                  message.role === 'assistant'
+                    ? 'primary.main'
+                    : 'secondary.main'
                 }
-              >
-                <Box
-                  bgcolor={
-                    message.role === 'assistant'
-                      ? 'primary.main'
-                      : 'secondary.main'
-                  }
-                  color="white"
-                  borderRadius={16}
-                  p={3}
-                >
-                  {message.content}
-                </Box>
-              </Box>
-            ))}
+                color="white"
+                borderRadius={16}
+                p={3}
+                dangerouslySetInnerHTML={{ __html: marked(message.content) }} // Render Markdown
+              />
+            </Box>
+          ))}
         </Stack>
         <Stack direction="row" spacing={2}>
           <TextField
@@ -113,5 +111,5 @@ export default function Home() {
         </Stack>
       </Stack>
     </Box>
-  )
+  );
 }
